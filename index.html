@@ -104,7 +104,7 @@
 		}
 		var activeIndex = activeIndexes[0];
 		if (!getVal(percs[activeIndex]).trim().length) return;
-		totalIndex = parseFloat(getVal(indexes[activeIndex])) * parseFloat(getVal(percs[activeIndex])) / 100;
+		totalIndex = parseFloat(getVal(indexes[activeIndex])) / parseFloat(getVal(percs[activeIndex]));
 		indexes.forEach(function(index, i) {
 			index.placeholder = parseFloat((totalIndex * parseFloat(getVal(percs[i]))).toFixed(4));
 		});
