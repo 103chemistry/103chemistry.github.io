@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0">
+<title>103chemistry</title>
+</head>
+<body>
+	<div><span>C<span></div>
+	<input type="number" min="0" inputmode="decimal" id="perc1" class="perc" />
+	<input type="number" min="0" inputmode="decimal" id="index1" class="index" />
+	<p></p>
+	<div><span>H<span></div>
+	<input type="number" min="0" inputmode="decimal" id="perc2" class="perc" />
+	<input type="number" min="0" inputmode="decimal" id="index2" class="index" />
+	<p></p>
+	<div><span>X<span></div>
+	<input type="number" min="0" inputmode="decimal" id="perc3" class="perc" />
+	<input type="number" min="0" inputmode="decimal" id="index3" class="index" />
+	<p></p>
+	<input type="button" value="Reset" onclick="reset(2)" id="resetBtn" />
+</body>
+<style type="text/css">
+	* { color: white; }
+	body { background-color: #282828; text-align: center; }
+	input {
+		outline: none;
+		border: none;
+		border-radius: 0px;
+		-webkit-appearance: none;
+	}
+	div {
+		font-family: Sans-Serif;
+		margin: 0px 5px 0px 5px;
+		text-align: center;
+		display: inline-block;
+		width: 65px;
+		height: 65px;
+	}
+	span { line-height: 65px; font-weight: 100; }
+	input[type="number"] {
+		padding: 0px 10px 0px 10px;
+		margin: 0px 5px 0px 5px;	
+		font-family: Monospace;
+		height: 65px;
+	}
+	div, input[type="number"] {
+		background-color: #3c3836;
+		border-bottom: 4px solid #d3869b;
+		font-size: 30pt;
+		vertical-align: middle;
+	}
+	input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+	::placeholder { color: #8ec07c; }
+	.perc { width: 60px; text-align: center; }
+	.index { width: 45%; }
+	p { font-size: 10pt; }
+	input[type="button"] {
+		width: 95%;
+		height: 60px;
+		font-size: 20pt;
+		background-color: #d3869b;
+	}
+
+</style>
+<script type="text/javascript">
+	var percs = Array.from(document.getElementsByClassName("perc"));
+	var indexes = Array.from(document.getElementsByClassName("index"));
+	
+	function getVal(elem) { return (elem.value) ? elem.value : elem.placeholder; }
+	function reset(l) {
+		indexes.forEach(function(elem) { elem.placeholder = ""; });
+		if (l >= 1) percs.forEach(function(elem) { elem.placeholder = ""; });
+		if (l == 2) {
+			percs.forEach(function(elem) { elem.value = ""; });
+			indexes.forEach(function(elem) { elem.value = ""; });
+		}
+	}
+	
+	var total = 0.0;
+	var totalIndex = 0.0;
+	
+	function calcPerc() {
+		total = 0.0;
+		var activePercs = [], inactivePerc = -1;
+		percs.forEach(function(perc, i) {
+			if (perc.value.trim().length) {
+				activePercs.push(i);
+				total += parseFloat(perc.value);
+			}
+			else inactivePerc = i;
+		});
+		if (activePercs.length != 2) {
+			reset(1);
+			return;
+		}
+		percs[inactivePerc].placeholder = parseFloat((100.0 - total).toFixed(4));
+		
+		var activeIndexes = [];
+		indexes.forEach(function(index, i) { if (index.value.trim().length) activeIndexes.push(i); });
+		if (activeIndexes.length != 1) {
+			reset(0);
+			return;
+		}
+		var activeIndex = activeIndexes[0];
+		if (!getVal(percs[activeIndex]).trim().length) return;
+		totalIndex = parseFloat(getVal(indexes[activeIndex])) * parseFloat(getVal(percs[activeIndex])) / 100;
+		indexes.forEach(function(index, i) {
+			index.placeholder = parseFloat((totalIndex * parseFloat(getVal(percs[i]))).toFixed(4));
+		});
+		
+	}
+	
+	var inputs = document.getElementsByTagName("input");
+	for (var i = 0; i < inputs.length; i++) inputs[i].onkeyup = calcPerc;
+	
+	function btnSize() { document.getElementById("resetBtn").style.width = percs[0].offsetWidth + indexes[0].offsetWidth + 93 + "px"; }
+	btnSize();
+	window.onresize = btnSize;
+</script>
+</html>
