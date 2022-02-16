@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0">
-<title>103chemistry</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0">
+	<title>103chemistry</title>
 </head>
 <body>
 	<div><span>C<span></div>
@@ -17,6 +17,14 @@
 	<div><span>X<span></div>
 	<input type="number" min="0" inputmode="decimal" id="perc3" class="perc" />
 	<input type="number" min="0" inputmode="decimal" id="index3" class="index" />
+	<p></p>
+	<input type="number" min="0" inputmode="decimal" id="xmass" placeholder="M(x)" />
+	<p></p>
+	<div class="findexdiv"><span>C: </span><span id="findex1" class="findex"></span></div>
+	<p></p>
+	<div class="findexdiv"><span>H: </span><span id="findex2" class="findex"></span></div>
+	<p></p>
+	<div class="findexdiv"><span>X: </span><span id="findex3" class="findex"></span></div>
 	<p></p>
 	<input type="button" value="Reset" onclick="reset(2)" id="resetBtn" />
 </body>
@@ -51,21 +59,23 @@
 		vertical-align: middle;
 	}
 	input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
-	::placeholder { color: #8ec07c; }
+	::placeholder, .findex { color: #8ec07c; }
 	.perc { width: 15%; text-align: center; }
-	.index { width: 40%; }
+	.index { width: 45%; }
 	p { font-size: 10pt; }
 	input[type="button"] {
-		width: 95%;
+		width: 70%;
 		height: 60px;
 		font-size: 20pt;
 		background-color: #d3869b;
 	}
-
+	.findexdiv { width: 70%; }
 </style>
 <script type="text/javascript">
 	var percs = Array.from(document.getElementsByClassName("perc"));
 	var indexes = Array.from(document.getElementsByClassName("index"));
+	var findexes = Array.from(document.getElementsByClassName("findex"));
+	var masses = [12, 1, 0];
 	
 	function getVal(elem) { return (elem.value) ? elem.value : elem.placeholder; }
 	function reset(l) {
@@ -74,13 +84,15 @@
 		if (l == 2) {
 			percs.forEach(function(elem) { elem.value = ""; });
 			indexes.forEach(function(elem) { elem.value = ""; });
+			findexes.forEach(function(elem) { elem.innerText = ""; });
+			document.getElementById("xmass").elem.value = "";
 		}
 	}
 	
 	var total = 0.0;
 	var totalIndex = 0.0;
 	
-	function calcPerc() {
+	function calcPerc_() {
 		total = 0.0;
 		var activePercs = [], inactivePerc = -1;
 		percs.forEach(function(perc, i) {
@@ -108,13 +120,32 @@
 		indexes.forEach(function(index, i) {
 			index.placeholder = parseFloat((totalIndex * parseFloat(getVal(percs[i]))).toFixed(4));
 		});
-		
+	}
+	
+	function calcPerc() {
+		calcPerc_();
+		for (var i = 0; i < 3; i++) {
+			var ind = getVal(indexes[i]);
+			findexes[i].innerText = (getVal(percs[i]).trim().length && ind.trim().length && masses[i] > 0) ? parseFloat((parseFloat(ind) / masses[i]).toFixed(4)) : "";
+		}
 	}
 	
 	var inputs = document.getElementsByTagName("input");
 	for (var i = 0; i < inputs.length; i++) inputs[i].onkeyup = calcPerc;
+	var e = document.getElementById("xmass");
+	e.onkeyup = function() {
+		masses[2] = (e.value.trim().length) ? parseFloat(e.value) : 0;
+		var ind = getVal(indexes[2]);
+		findexes[2].innerText = (getVal(percs[2]).trim().length && ind.trim().length && masses[2] > 0) ? parseFloat((parseFloat(ind) / masses[2]).toFixed(4)) : "";
+	};
 	
-	function btnSize() { document.getElementById("resetBtn").style.width = percs[0].offsetWidth + indexes[0].offsetWidth + 93 + "px"; }
+	function btnSize() {
+		indexes.forEach(function(elem) { elem.style.width = document.body.offsetWidth - percs[0].offsetWidth - 125 + "px"; });
+		var w = document.body.offsetWidth - 20;
+		document.getElementById("resetBtn").style.width = w + 9 + "px";
+		document.getElementById("xmass").style.width = w - 11 + "px";
+		Array.from(document.getElementsByClassName("findexdiv")).forEach(function(elem) { elem.style.width = w + 9 + "px"; });
+	}
 	btnSize();
 	window.onresize = btnSize;
 </script>
